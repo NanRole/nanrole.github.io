@@ -1,0 +1,115 @@
+<!DOCTYPE html><html><head><meta charset='utf-8'><meta http-equiv='Access-Control-Allow-Origin' content='*'><meta http-equiv='Access-Control-Allow-Credentials' content='true'><script src='https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script><script src='https://fustyles.github.io/webduino/SpBlocklyJS/GameElements_20190131/gameelements.js'></script><script src='https://fustyles.github.io/webduino/SpBlocklyJS/MQTT_20220324/mqtt.min.js'></script><script src='https://fustyles.github.io/webduino/SpBlocklyJS/SpeechRecognition_20220729/speechrecognition.js'></script></head><body><script>const delay=(seconds)=>{return new Promise((resolve)=>{setTimeout(resolve,seconds*1000);});};const main=async()=>{
+var action, offset, j, channel, k, temp;
+
+
+//第六列貼頻道名稱
+span_create('spanChannel',60,300,24,'頻道：',999);
+text_create('',200,30,150,300,'#ffffff','#000000',18,1,'',999,true);
+
+//背景及第一列
+body_set("backgroundColor",'#cc66cc');
+image_create('','https://i.imgur.com/vvqYxOb.png',50,50,60,30,999,true);
+span_create('spanTitle',100,20,50,'遙控模式',999);
+span_create('spanCommand',280,40,30,'',999);
+span_set('spanCommand',"color",'#ff0000');
+
+//第三列
+select_create('',100,35,60,150,'#ffffff','#000000',24,1,[['Cat', '學貓叫'], ['Dog', '學狗叫'], ['Horse', '學馬叫'], ['Cow', '學牛叫'], ['Bird', '學鳥叫']],'',999,true);
+number_create('',180,150,30,30,24,9,1,1,1,1,999,true);
+span_create('times',220,150,24,'次',999);
+button_create('btnYell',70,35,260,150,1,null,'喊叫',22,999,true);
+async function gamebutton_btnYell_onclick (event) {
+  if ((radio_name_get('control')) == '0') {
+    mqtt_client.publish(channel, String(([select_get('',"selectedText"),number_get('',"value"),'次'].join(''))));
+  }
+};
+document.getElementById("gamebutton_btnYell").addEventListener("click", gamebutton_btnYell_onclick, true);
+
+//第二列
+span_create('remote',60,100,24,'遙控',999);
+radio_create('radioRemote','control',110,100,24,'0',true,1,999,true);
+span_create('sound',160,100,24,'聲控',999);
+radio_create('radioSound','control',210,100,24,'1',false,1,999,true);
+
+//第五列
+button_create('btnClear',80,35,60,250,1,null,'清除',24,999,true);
+async function gamebutton_btnClear_onclick (event) {
+  mqtt_client.publish(channel, String('清除'));
+  span_set('spanCommand',"innerHTML",'');
+  for (var k_index in action) {
+    k = action[k_index];
+    checkbox_set((k[2]),"checked",false);
+  }
+  select_set('',"value",'');
+  number_set('',"value",'1');
+};
+document.getElementById("gamebutton_btnClear").addEventListener("click", gamebutton_btnClear_onclick, true);
+
+//第四列
+action = [['spanAction1', '頭轉上', 'ckbAction1'], ['spanAction2', '頭轉下', 'ckbAction2'], ['spanAction3', '頭轉左', 'ckbAction3'], ['spanAction4', '頭轉右', 'ckbAction4'], ['spanAction5', '舉左手', 'ckbAction5'], ['spanAction6', '舉右手', 'ckbAction6']];
+offset = 0;
+for (var j_index in action) {
+  j = action[j_index];
+  span_create((j[0]),(60 + 100 * offset),200,24,(j[1]),999);
+  checkbox_create((j[2]),(60 + 100 * offset + 70),200,24,(j[1]),false,1,999,true);
+  offset = (typeof offset === 'number' ? offset : 0) + 1;
+}
+button_create('btnAction',90,35,630,200,1,null,'做動作',24,999,true);
+async function gamebutton_btnAction_onclick (event) {
+  if ((radio_name_get('control')) == '0') {
+    temp = [];
+    for (var k_index2 in action) {
+      k = action[k_index2];
+      temp.push((checkbox_get((k[2]),"checked")));
+      mqtt_client.publish(channel, String(temp));
+    }
+  }
+};
+document.getElementById("gamebutton_btnAction").addEventListener("click", gamebutton_btnAction_onclick, true);
+
+//MQTT及計時器
+const clientId = "mqtt_" + Math.random().toString(16).substr(2, 8);
+const options = {
+	username: '',
+	password: '',
+	keepalive: 60,
+	clientId: clientId,
+	protocolId: "MQTT",
+	protocolVersion: 4,
+	clean: true,
+	reconnectPeriod: 1000,
+	connectTimeout: 30 * 1000
+}
+
+var mqtt_client = mqtt.connect('wss://broker.emqx.io:8084/mqtt',options);
+mqtt_client.on("connect", ()=>{
+	console.log("connected");
+  mqtt_client.subscribe('yourtopic/data');
+	mqtt_client.on("message", async function (topic, payload) {
+  if (topic=='yourtopic/data') {
+  }
+   })
+  }
+)
+
+recognition.lang="cmn-Hant-TW";
+span_interim(0,0,20,999,false);
+Recognition_switch(0);
+Recognition_recognitionFinish = async function() {
+  mqtt_client.publish(channel, String((Recognition_final_get())));
+  span_set('spanCommand',"innerHTML",('語音命令：' + String(Recognition_final_get())));
+
+};
+setInterval(async function(){
+  channel = (text_get('',"value"));
+  if ((radio_name_get('control')) == '0') {
+    Recognition_switch(0);
+    span_set('spanTitle',"innerHTML",'遙控模式');
+    image_set('',"url",'https://i.imgur.com/vvqYxOb.png');
+  } else {
+    Recognition_switch(1);
+    span_set('spanTitle',"innerHTML",'聲控模式');
+    image_set('',"url",'https://i.imgur.com/CWPMRdX.png');
+  }
+},100);
+};main();</script></body></html>
