@@ -377,8 +377,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		// catCommand,		
 		"<sep></sep>",	
 		// catJavaScript,
-		catPageElements
-		// catChart,
+		catPageElements,
+		catChart
 		// "<sep></sep>",
 		// catSpreadsheetsql,
 		// catTHINGSPEAK,
