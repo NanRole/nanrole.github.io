@@ -378,15 +378,15 @@ document.addEventListener('DOMContentLoaded', function() {
 		"<sep></sep>",	
 		// catJavaScript,
 		catPageElements,
-		catChart
+		catChart,
 		// "<sep></sep>",
 		// catSpreadsheetsql,
 		// catTHINGSPEAK,
 		// catIFTTT,
 		// catLineNotify,
 		// catTelegram,
-		// "<sep></sep>",
-		// catOpenAI,	
+		"<sep></sep>",
+		catOpenAI	
 		// catHolistic,	
 		// catTeachablemachine,
 		// catKNNclassifier,		
