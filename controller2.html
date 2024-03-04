@@ -1,0 +1,124 @@
+<!DOCTYPE html><html><head><meta charset='utf-8'><meta http-equiv='Access-Control-Allow-Origin' content='*'><meta http-equiv='Access-Control-Allow-Credentials' content='true'><script src='https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script><script src='https://fustyles.github.io/webduino/SpBlocklyJS/GameElements_20190131/gameelements.js'></script><link rel='stylesheet' href='https://fustyles.github.io/webduino/SpBlocklyJS/css/icon_custom.css' /><script src='https://fustyles.github.io/webduino/SpBlocklyJS/MQTT_20220324/mqtt.min.js'></script><script src='https://fustyles.github.io/webduino/SpBlocklyJS/SpeechRecognition_20220729/speechrecognition.js'></script><script src='https://fustyles.github.io/webduino/SpBlocklyJS/openAI_20221212/openAI.js'></script></head><body>
+<script>
+const delay = (seconds) => {
+    return new Promise((resolve) => {
+        setTimeout(resolve, seconds * 1000);
+    });
+};
+const main = async () => {
+    var mute;
+
+
+    text_create('', 160, 35, 20, 20, '#ffffff', '#000000', 20, 1, '', 999, true);
+    image_create('sound', 'https://i.imgur.com/b8GmSmP.png', 40, 40, 190, 20, 999, true);
+    async function gameimage_sound_onclick(event) {
+        if (mute == true) {
+            image_set('sound', "url", 'https://i.imgur.com/idbWbsf.png');
+            mute = false;
+            music_create('https://www.youtube.com/embed/xYTWPHHA_BA?autoplay=1');
+            var musicTimer = setTimeout(function() {
+                music_delete();
+            }, 20000);
+            Recognition_switch(1);
+        } else {
+            image_set('sound', "url", 'https://i.imgur.com/b8GmSmP.png');
+            mute = true;
+            Recognition_switch(0);
+        }
+    };
+    document.getElementById("gameimage_sound").addEventListener("click", gameimage_sound_onclick, true);
+    SpeechRecognition_interim = document.getElementById("gametext_");
+    button_create('submit', 40, 40, 230, 20, 1, (HextoRgb('#ff9900')), '✔', 20, 999, true);
+    async function gamebutton_submit_onclick(event) {
+        openai_chat_initial('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', '', "gpt-4-turbo-preview");
+        openai_chat_request((text_get('', "value")));
+        openai_chat_response = async function() {
+            mqtt_client.publish('controller/data', String((openai_chat_response_get(''))));
+
+        };
+    };
+    document.getElementById("gamebutton_submit").addEventListener("click", gamebutton_submit_onclick, true);
+
+    mute = true;
+    recognition.lang = "cmn-Hant-TW";
+    const clientId = "mqtt_" + Math.random().toString(16).substr(2, 8);
+    const options = {
+        username: '',
+        password: '',
+        keepalive: 60,
+        clientId: clientId,
+        protocolId: "MQTT",
+        protocolVersion: 4,
+        clean: true,
+        reconnectPeriod: 1000,
+        connectTimeout: 30 * 1000
+    }
+
+    var mqtt_client = mqtt.connect('wss://broker.mqttgo.io:8084/mqtt', options);
+    mqtt_client.on("connect", () => {
+        console.log("connected");
+        mqtt_client.subscribe('controller/data');
+        mqtt_client.on("message", async function(topic, payload) {
+            if (topic == 'controller/data') {}
+        })
+    })
+
+    body_set("backgroundColor", '#339999');
+    head_add_viewport(1, 1, 2, "yes");
+
+    button_create('bow', 100, 50, 30, 80, 1, (HextoRgb('#00cccc')), '鞠躬', 20, 999, true);
+    button_create('dance', 100, 50, 160, 80, 1, (HextoRgb('#00cccc')), '華爾滋', 20, 999, true);
+    button_create('wish', 100, 50, 30, 150, 1, (HextoRgb('#00cccc')), '祝福', 20, 999, true);
+    button_create('affectionate', 100, 50, 160, 150, 1, (HextoRgb('#00cccc')), '撒嬌', 20, 999, true);
+
+    button_create('left', 50, 40, 20, 280, 1, (HextoRgb('#9999ff')), '⬅', 20, 999, true);
+    button_create('up', 50, 40, 70, 230, 1, (HextoRgb('#9999ff')), '⬆', 20, 999, true);
+    button_create('right', 50, 40, 120, 280, 1, (HextoRgb('#9999ff')), '➡', 20, 999, true);
+    button_create('down', 50, 40, 70, 330, 1, (HextoRgb('#9999ff')), '⬇', 20, 999, true);
+    button_create('rotate_left', 50, 50, 200, 240, 1, (HextoRgb('#ff99ff')), '⟲', 20, 999, true);
+    button_create('rotate_right', 50, 50, 200, 310, 1, (HextoRgb('#ff99ff')), '⟳', 20, 999, true);
+
+    async function gamebutton_bow_onclick(event) {
+        mqtt_client.publish('controller/data', String('bow'));
+    };
+    document.getElementById("gamebutton_bow").addEventListener("click", gamebutton_bow_onclick, true);
+    async function gamebutton_dance_onclick(event) {
+        mqtt_client.publish('controller/data', String('dance'));
+    };
+    document.getElementById("gamebutton_dance").addEventListener("click", gamebutton_dance_onclick, true);
+    async function gamebutton_wish_onclick(event) {
+        mqtt_client.publish('controller/data', String('wish'));
+    };
+    document.getElementById("gamebutton_wish").addEventListener("click", gamebutton_wish_onclick, true);
+    async function gamebutton_affectionate_onclick(event) {
+        mqtt_client.publish('controller/data', String('affectionate'));
+    };
+    document.getElementById("gamebutton_affectionate").addEventListener("click", gamebutton_affectionate_onclick, true);
+    async function gamebutton_left_onclick(event) {
+        mqtt_client.publish('controller/data', String('left'));
+    };
+    document.getElementById("gamebutton_left").addEventListener("click", gamebutton_left_onclick, true);
+    async function gamebutton_right_onclick(event) {
+        mqtt_client.publish('controller/data', String('right'));
+    };
+    document.getElementById("gamebutton_right").addEventListener("click", gamebutton_right_onclick, true);
+    async function gamebutton_up_onclick(event) {
+        mqtt_client.publish('controller/data', String('up'));
+    };
+    document.getElementById("gamebutton_up").addEventListener("click", gamebutton_up_onclick, true);
+    async function gamebutton_down_onclick(event) {
+        mqtt_client.publish('controller/data', String('down'));
+    };
+    document.getElementById("gamebutton_down").addEventListener("click", gamebutton_down_onclick, true);
+    async function gamebutton_rotate_left_onclick(event) {
+        mqtt_client.publish('controller/data', String('rotate_left'));
+    };
+    document.getElementById("gamebutton_rotate_left").addEventListener("click", gamebutton_rotate_left_onclick, true);
+    async function gamebutton_rotate_right_onclick(event) {
+        mqtt_client.publish('controller/data', String('rotate_right'));
+    };
+    document.getElementById("gamebutton_rotate_right").addEventListener("click", gamebutton_rotate_right_onclick, true);
+};
+main();
+</script>
+</body></html>
