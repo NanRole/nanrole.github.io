@@ -6,7 +6,7 @@ const delay = (seconds) => {
     });
 };
 const main = async () => {
-    var num, list, str_num, drawing, ball, i;
+    var num, str_num, list, drawing, ball, i;
 
     function mathRandomInt(a, b) {
         if (a > b) {
@@ -48,6 +48,7 @@ const main = async () => {
     }
 
 
+    head_add_viewport(1, 1, 3, "yes");
     const clientId = "mqtt_" + Math.random().toString(16).substr(2, 8);
     const options = {
         username: '',
