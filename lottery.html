@@ -1,0 +1,107 @@
+<!DOCTYPE html><html><head><meta charset='utf-8'><meta http-equiv='Access-Control-Allow-Origin' content='*'><meta http-equiv='Access-Control-Allow-Credentials' content='true'><script src='https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script><script src='https://fustyles.github.io/webduino/SpBlocklyJS/GameElements_20190131/gameelements.js'></script><link rel='stylesheet' href='https://fustyles.github.io/webduino/SpBlocklyJS/css/icon_custom.css' /><script src='https://fustyles.github.io/webduino/SpBlocklyJS/MQTT_20220324/mqtt.min.js'></script></head><body>
+<script>
+const delay = (seconds) => {
+    return new Promise((resolve) => {
+        setTimeout(resolve, seconds * 1000);
+    });
+};
+const main = async () => {
+    var num, list, str_num, drawing, ball, i;
+
+    function mathRandomInt(a, b) {
+        if (a > b) {
+            // Swap a and b to ensure a is smaller.
+            var c = a;
+            a = b;
+            b = c;
+        }
+        return Math.floor(Math.random() * (b - a + 1) + a);
+    }
+
+    function listsGetSortCompare(type, direction) {
+        var compareFuncs = {
+            'NUMERIC': function(a, b) {
+                return Number(a) - Number(b);
+            },
+            'TEXT': function(a, b) {
+                return String(a) > String(b) ? 1 : -1;
+            },
+            'IGNORE_CASE': function(a, b) {
+                return String(a).toLowerCase() > String(b).toLowerCase() ? 1 : -1;
+            },
+        };
+        var compare = compareFuncs[type];
+        return function(a, b) {
+            return compare(a, b) * direction;
+        };
+    }
+
+    // 描述此函式...
+    function _E6_95_B8_E5_AD_97_E4_BF_9D_E7_95_99_E5_85_A9_E4_BD_8D(num) {
+        str_num = '';
+        if (num < 10) {
+            str_num = '0' + String(num);
+        } else {
+            str_num = num;
+        }
+        return str_num;
+    }
+
+
+    const clientId = "mqtt_" + Math.random().toString(16).substr(2, 8);
+    const options = {
+        username: '',
+        password: '',
+        keepalive: 60,
+        clientId: clientId,
+        protocolId: "MQTT",
+        protocolVersion: 4,
+        clean: true,
+        reconnectPeriod: 1000,
+        connectTimeout: 30 * 1000
+    }
+
+    var mqtt_client = mqtt.connect('wss://broker.mqttgo.io:8084/mqtt', options);
+    mqtt_client.on("connect", () => {
+        console.log("connected");
+        mqtt_client.subscribe('lottery/begin');
+        mqtt_client.on("message", async function(topic, payload) {
+            if (topic == 'lottery/begin') {
+                drawing = true;
+            }
+        })
+    })
+
+    list = [];
+    canvas_create('', 500, 500, 0, 0, 999);
+    drawing = false;
+
+    image_create('', 'https://i.imgur.com/K1sUWjx.gif', 300, 200, 0, 0, 999, true);
+    async function gameimage__onclick(event) {
+        if (drawing == true && list.length < 5) {
+            while (true) {
+                ball = mathRandomInt(1, 39);
+                if (list.indexOf(ball) + 1 == 0) {
+                    canvas_arc('', 5, (25 + list.length * 50), 225, 25, 0, 6.284, false, true, '#ffff00', 0, 1);
+                    span_create(ball, (15 + list.length * 50), 212.5, 20, (_E6_95_B8_E5_AD_97_E4_BF_9D_E7_95_99_E5_85_A9_E4_BD_8D(ball)), 999);
+                }
+                list.push(ball);
+                if (list.length == 5) {
+                    await delay(1);
+                    mqtt_client.publish('lottery/data', String(list));
+                    list = list.slice().sort(listsGetSortCompare("NUMERIC", 1));
+                    for (i = 1; i <= 5; i++) {
+                        canvas_arc('', 5, (25 + (i - 1) * 50), 275, 25, 0, 6.284, false, true, '#ffff00', 0, 1);
+                        ball = list[(i - 1)];
+                        span_create((Math.random()), (15 + (i - 1) * 50), 262.5, 20, (_E6_95_B8_E5_AD_97_E4_BF_9D_E7_95_99_E5_85_A9_E4_BD_8D(ball)), 999);
+                    }
+                }
+                break;
+            }
+        }
+    };
+    document.getElementById("gameimage_").addEventListener("click", gameimage__onclick, true);
+};
+main();
+</script>
+</body></html>
