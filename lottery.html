@@ -77,6 +77,12 @@ const main = async () => {
     canvas_create('', 500, 500, 0, 0, 999);
     drawing = false;
 
+    button_create('', 70, 35, 115, 300, 1, (HextoRgb('#ccffff')), '開獎！', 20, 999, false);
+    async function gamebutton__onclick(event) {
+        mqtt_client.publish('lottery/data', String(list));
+    };
+    document.getElementById("gamebutton_").addEventListener("click", gamebutton__onclick, true);
+
     image_create('', 'https://i.imgur.com/K1sUWjx.gif', 300, 200, 0, 0, 999, true);
     async function gameimage__onclick(event) {
         if (drawing == true && list.length < 5) {
@@ -85,19 +91,20 @@ const main = async () => {
                 if (list.indexOf(ball) + 1 == 0) {
                     canvas_arc('', 5, (25 + list.length * 50), 225, 25, 0, 6.284, false, true, '#ffff00', 0, 1);
                     span_create(ball, (15 + list.length * 50), 212.5, 20, (_E6_95_B8_E5_AD_97_E4_BF_9D_E7_95_99_E5_85_A9_E4_BD_8D(ball)), 999);
-                }
-                list.push(ball);
-                if (list.length == 5) {
-                    await delay(1);
-                    mqtt_client.publish('lottery/data', String(list));
-                    list = list.slice().sort(listsGetSortCompare("NUMERIC", 1));
-                    for (i = 1; i <= 5; i++) {
-                        canvas_arc('', 5, (25 + (i - 1) * 50), 275, 25, 0, 6.284, false, true, '#ffff00', 0, 1);
-                        ball = list[(i - 1)];
-                        span_create((Math.random()), (15 + (i - 1) * 50), 262.5, 20, (_E6_95_B8_E5_AD_97_E4_BF_9D_E7_95_99_E5_85_A9_E4_BD_8D(ball)), 999);
+                    list.push(ball);
+                    if (list.length == 5) {
+                        await delay(1);
+                        list = list.slice().sort(listsGetSortCompare("NUMERIC", 1));
+                        for (i = 1; i <= 5; i++) {
+                            canvas_arc('', 5, (25 + (i - 1) * 50), 275, 25, 0, 6.284, false, true, '#ffff00', 0, 1);
+                            ball = list[(i - 1)];
+                            span_create((Math.random()), (15 + (i - 1) * 50), 262.5, 20, (_E6_95_B8_E5_AD_97_E4_BF_9D_E7_95_99_E5_85_A9_E4_BD_8D(ball)), 999);
+                        }
+                        await delay(1);
+                        button_set('', "display", true);
                     }
+                    break;
                 }
-                break;
             }
         }
     };
