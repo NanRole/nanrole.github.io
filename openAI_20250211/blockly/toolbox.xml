@@ -18,7 +18,7 @@
       </block>
     </value>
   </block>
-  <block type="openai_chat_image_request">
+<!--   <block type="openai_chat_image_request">
     <value name="words">
       <block type="text">
         <field name="TEXT"></field>
@@ -29,15 +29,15 @@
         <field name="TEXT"></field>
       </block>
     </value>
-  </block>  
+  </block>   -->
   <block type="openai_chat_response">
   </block>
   <block type="openai_chat_response_get">
   </block>
   <block type="openai_chat_content_clear">
   </block>
-  <block type="openai_vision_content_clear">
-  </block>  
+<!--   <block type="openai_vision_content_clear">
+  </block>   -->
   <block type="openai_chat_insert">
     <value name="words">
       <block type="text">
@@ -45,7 +45,7 @@
       </block>
     </value>
   </block> 
-  <block type="openai_chat_content_file_remote_insert">
+<!--   <block type="openai_chat_content_file_remote_insert">
     <value name="url">
       <block type="text">
          <field name="TEXT"></field>
@@ -53,14 +53,14 @@
     </value>
   </block> 
   <block type="openai_chat_content_file">
-  </block>
-  <block type="openai_chat_content_file_remote">
+  </block> -->
+<!--   <block type="openai_chat_content_file_remote">
     <value name="url">
       <block type="text">
         <field name="TEXT"></field>
       </block>
     </value>
-  </block>
+  </block> -->
   <block type="openai_image_initial">
     <value name="key">
       <block type="text">
