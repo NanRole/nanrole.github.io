@@ -176,20 +176,14 @@ Blockly.Blocks['openai_chat_initial'] = {
       .appendField(Blockly.Msg.OPENAI_MODEL_SHOW)
       .appendField(new Blockly.FieldDropdown([
 			["gpt-3.5-turbo","gpt-3.5-turbo"],
-			["gpt-3.5-turbo-0613","gpt-3.5-turbo-0613"],
-			["gpt-3.5-turbo-0301","gpt-3.5-turbo-0301"],	      
-			["gpt-3.5-turbo-16k","gpt-3.5-turbo-16k"],
-			["gpt-3.5-turbo-16k-0613","gpt-3.5-turbo-16k-0613"],
-			["gpt-4","gpt-4"],	      
-			["gpt-4-0613","gpt-4-0613"],
 			["gpt-4-turbo","gpt-4-turbo"],
 			["gpt-4o","gpt-4o"],
 			["gpt-4o-mini","gpt-4o-mini"],
-			["o1-mini","o1-mini"],
-			["o1-2024-12-17","o1-2024-12-17"],
-			["Groq_llama-3.2-90b-vision-preview","llama-3.2-90b-vision-preview"],
-			["Groq_deepseek-r1-distill-llama-70b","deepseek-r1-distill-llama-70b"],
-			["xAI_grok-2-vision-latest","grok-2-vision-latest"]
+			["o1-mini","o1-mini"]
+			// ["o1-2024-12-17","o1-2024-12-17"],
+			// ["Groq_llama-3.2-90b-vision-preview","llama-3.2-90b-vision-preview"],
+			// ["Groq_deepseek-r1-distill-llama-70b","deepseek-r1-distill-llama-70b"],
+			// ["xAI_grok-2-vision-latest","grok-2-vision-latest"]
 	  ]), "model"); 	  
   this.setInputsInline(false);	  
   this.setPreviousStatement(true);
