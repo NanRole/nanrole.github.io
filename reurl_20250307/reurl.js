@@ -5,14 +5,17 @@ const REURL_ENDPOINT = "https://api.reurl.cc";
 
 function reurl_shorten_url(input_url) {
 	return fetch(REURL_ENDPOINT, {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-        "reurl-api-key": REURL_API_KEY
-    },
-    body: JSON.stringify({ url: input_url })
+	    method: "POST",
+	    headers: {
+	        "Content-Type": "application/json",
+	        "reurl-api-key": REURL_API_KEY
+	    },
+	    body: JSON.stringify({ url: input_url })
 	})
 	.then(response => response.json())
 	.then(data => data.short_url)
-	.catch(error => console.error("錯誤:", error));
+	.catch(error => {
+		console.error("錯誤:", error);
+		return null;
+	    });
 }  
