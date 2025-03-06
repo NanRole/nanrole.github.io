@@ -1,0 +1,1 @@
+Blockly.Msg["REURL_LONGTOSHORT"] = "缩短网址";

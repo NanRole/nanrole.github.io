@@ -1,0 +1,1 @@
+Blockly.Msg["REURL_LONGTOSHORT"] = "Shorten URL";
