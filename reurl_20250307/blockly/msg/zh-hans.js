@@ -1,1 +1,1 @@
-MSG.openaichat = "reurl";
+MSG.catreurl = "reurl";
