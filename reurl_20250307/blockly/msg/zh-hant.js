@@ -1,1 +1,1 @@
-Blockly.Msg["REURL_LONGTOSHORT"] = "縮短網址";
+MSG.openaichat = "reurl";
